@@ -1,0 +1,74 @@
++ Pour régler un bug de la détection des collisions, "Collision Detection"du "Rigidbody 2D" de la balle a été régler en mode "Continuous" (pour régler le problème où la balle échappe l'espace de la scène quand elle a une "Velovity" élevée).
+
++ Réglage d'une cause de bug (où la balle échappe l'espace de la scène), le "Trigger" Lose Collider était détaché des autres collider en laissant une brèche. Sa position a été ajusté.
+
++ Pour régler un bug de collision entre les sprites le "Collider" des différents sprites a été ajusté.
+
++ Ajustement de l'espace de la scène (les limites et les collisions):
+	- Agrandir l'espace
+	- Intersection des walls pour ne pas laisser de brèches.
+
++ Changement du Background.
+
++ Changement des couleurs des briques, et les redimentionner pour un nouveau look.
+
++ Création d'un nouveau design du paddle avec des effets particles.
+
++ Création d'une nouvelle balle (à partir du système des particules :
+	- Orb
+	- Inner electric glow
+	- Orb particles
+	- Smoke
+	- Path tail particles
+
++ Ajustement du script "ball.cs":
+	- Creation d'une nouvelle variable responsable sur la vitesse de la balle (ballSpeed)
+	- Renommage de "xPush,yPush" en "xDirection,yDirection" puisque ces derniers ne seront plus responsables sur la
+ 	"velocity" de la balle, (il seront utilisé comme vecteur normalisé, entre 0 et 1).
+	- Création de 2 nouvelles variables accessibles depuis l'éditeur, pour controller l'interval aléatoire du premier
+ 	lancement de la balle ainsi que sa vitesse
+	- Le RandomFactor était responsable sur un bug qui cause la balle a remonté lorsque la valeur du velocity y est proche de (-0.1)
+	il rajoute +0.2 après la collision et les balle commence a remonté. pour se faire, on va l'élimner de de l'axe Y, et le garder
+	dans l'axe X, avec une vrai valeur aléatoire et que ça aura une relation juste avec la collision avec le paddle.
+	D'où une comparaison de tag et de n'appliquer ce randomFactor que si le tag == paddle
+	- LockBallToPaddle a maintenant une nouvelle manière pour le verouillage(findWithTag Paddle) parce que la balle est devenu 	instanciable.
+	- D'où la suppression de la variable GameObject paddle qui n'est plus nécessaire
+	- Pour la résolution du problème où la balle perd sa vitesse après les collisions, un check dans FixedUpdate a été implémenté
+	pour fixer les limites de vitesse de la balle entre 98.5% et 101.5% de sa vitesse initial.
+
++ Ajustement du script "paddle.cs":
+	- Suppression des anciennes variables (minX,maxX,Screen Width...) et de la méthode GetPosX
+	- Creation d'une nouvelle variable de la taille horizontale de la scene en Units, et un offset du paddle
+	- Calcul des limites de la position du paddle dans la méthode Start
+	- Nouveau mode de calcul de la position du "Paddle" consiste à récuperer Input.GetAxis Horizontal du moteur de jeu.
+	- Réglage du Input Axis depuis le moteur de jeu (gravity and sensivity) (pour les touches a/d/left/right)
+	- Récuperation d'une nouvelle variable qui controle la vitesse du déplacement du paddle depuis le (GameController/GameSession)
+
++ Ajustement du Script "GameSession.cs":
+	- Nouvelle manière plus simple pour achever le Singleton Design Pattern (static instance et suppression de l'ancien système)
+	- Rendre le Singleton accessible de toutes les scenes par "DontDestroyOnLoad(this.gameObject);"
+	- Ajouter les scenes chargés comme "Delegates" pour faire des calculs après l'évènement du chargement/destruction des scenes 
+	(comme ajouter instancier le nombre de balles ...)
+	- Suppression de l'ancienne variable vitesse de jeu, puisque elle était inutile et n'a jamais été utilisé (à part dans l'update
+	du GameSession et d'une manière incorrecte, et qui ne donnait en tout cas aucun résultat).
+	- Création d'une nouvelle variable "paddleMvtSpeed" pour controller la vitesse du déplacement du Paddle.
+	- Création d'une nouvelle variable "ballSpeed" pour controller la vitesse du déplacement de la balle.
+	- Création des variables et méthodes nécessaires pour assurer le système de "vies restantes.
+
++ Ajustement du Script "LoseCollider.cs":
+	- Pour ajouter le système de verification de nombre de vies restantes
+	- Pour la destruction des gameObject de type Bonus
+
++Ajustement du Script "Block.cs":
+	- Nouvelle variable pour le prefab Bonus
+	- Nouvelle méthode dropBonus avec Random calcul pour instanciation des bonus.
+	- Appel du dropBonus dans la fonction DestroyBlock
+	
++ Création du script "Bonus.cs" pour la géstion des bonus
+
++ Création d'un nouveau prefab Bonus qui est instancié aléatoirement lors de la descrution d'un block
+	-IsTrigger
+	-Tag Bonus
+	- Collecté par paddle et détruit par lose collider
+
++ Nouvelle In-Game UI pour l'affichage du niveau actuel, score et vies restantes (avec les intégrations nécessaires dans le code)
